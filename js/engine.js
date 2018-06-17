@@ -26,7 +26,10 @@ var Engine = (function(global) {
 
     canvas.width = 505;
     canvas.height = 606;
-    doc.body.appendChild(canvas);
+    canvas.tabIndex = 0;
+    canvas.order = 2;
+    
+    document.querySelector('main').appendChild(canvas);
 
     /* This function serves as the kickoff point for the game loop itself
      * and handles properly calling the update and render methods.
@@ -77,9 +80,52 @@ var Engine = (function(global) {
      * functionality this way (you could just implement collision detection
      * on the entities themselves within your app.js file).
      */
+
+    function checkCollisions(){
+        allEnemies.forEach(function(enemy){
+
+            let radius = enemy.radius; // must be >=2 for collision accuracy because the x and y values change by increments < so without a radius it will be too specific
+            let xCollision = (player.x-radius <= enemy.x && enemy.x <= player.x+radius);
+            let yCollision = (player.y == enemy.y);
+            if (xCollision && yCollision ){ // if the x and y positions for enemy and characters match
+                /**
+                 * //flash body red on death
+                 * DEFEAT CONDITIONS GO HERE
+                 * */
+            console.log(enemy);
+                player.handleEnd('defeat');
+                document.querySelector('body').classList.add('alert-bg');
+                setTimeout(function(){
+                    document.querySelector('body').classList.remove('alert-bg');
+                }, 3000);
+                reset(); // reset board after loss condition
+            }
+        });
+    }
+
+    function checkVictory() {
+        if (player.y == -25) {
+            /**
+             * VICTORY CONDITIONS GO HERE
+             */
+            player.score ++; // increment score on victory
+            s1.updateBoard(); // update board with changes to time
+            if (player.score == 6 || player.score == 11) {
+                player.difficultyRamp = 1; // allow enemy to update speed when score reaches 6 and 11
+            }
+            player.handleEnd('victory');
+            document.querySelector('body').classList.add('victory-bg');
+                setTimeout(function(){
+                    document.querySelector('body').classList.remove('victory-bg');
+                }, 3000);
+            reset();
+        }
+    }
+
     function update(dt) {
         updateEntities(dt);
-        // checkCollisions();
+        checkCollisions();
+        checkVictory();
     }
 
     /* This is called by the update function and loops through all of the
@@ -91,7 +137,7 @@ var Engine = (function(global) {
      */
     function updateEntities(dt) {
         allEnemies.forEach(function(enemy) {
-            enemy.update(dt);
+            enemy.update(dt, player.score); // player score is passed onto enemy updates to change difficulty according to player's score
         });
         player.update();
     }
@@ -161,7 +207,8 @@ var Engine = (function(global) {
      * those sorts of things. It's only called once by the init() method.
      */
     function reset() {
-        // noop
+        player.x = 200; // reset player positions on canvas
+        player.y = 400;
     }
 
     /* Go ahead and load all of the images we know we're going to need to
@@ -173,7 +220,13 @@ var Engine = (function(global) {
         'images/water-block.png',
         'images/grass-block.png',
         'images/enemy-bug.png',
-        'images/char-boy.png'
+        'images/enemy-bug-2.png',
+        'images/char-boy.png',
+        'images/char-cat-girl.png',
+        'images/char-pink-girl.png',
+        'images/char-horn-girl.png',
+        'images/char-pink-girl.png',
+        'images/char-princess-girl.png'
     ]);
     Resources.onReady(init);
 
