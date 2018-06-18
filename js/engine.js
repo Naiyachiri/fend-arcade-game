@@ -81,6 +81,12 @@ var Engine = (function(global) {
      * on the entities themselves within your app.js file).
      */
 
+     /**
+      * potentially convert this function out of the game's engine and into a player or enemy method 
+      * https://www.htmlgoodies.com/beyond/javascript/class-member-encapsulation-in-javascript-data-hiding.html
+      * encapsulation will prevent brittle, difficult to maintain and error-prone code
+      */
+      
     function checkCollisions(){
         allEnemies.forEach(function(enemy){
 
@@ -92,7 +98,9 @@ var Engine = (function(global) {
                  * //flash body red on death
                  * DEFEAT CONDITIONS GO HERE
                  * */
-            console.log(enemy);
+                //DEBUG
+                console.log(`collision at ${enemy.x} (enemy) and ${player.x} (player)`);
+                //DEBUG
                 player.handleEnd('defeat');
                 document.querySelector('body').classList.add('alert-bg');
                 setTimeout(function(){
