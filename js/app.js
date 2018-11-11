@@ -1,5 +1,3 @@
-'use-strict'; // helps enforce best practices coding
-
 /*
 POTENTIAL CHANGES:
  positions are absolute[an exact x and y coordinate is declared, but could also be planned around a 2D array/object, where {row = [0, 1, 2, 3, 4, 5], column = [0, 1, 2, 3, 4]}
@@ -20,19 +18,18 @@ class Enemy {
         this.speedModifier = speedModifier; // potentially used if you want to change enemy's speed
         
         // for randomization of SmartEnemy this may instead not be used // changed to a function for called-if-neccessary type function
-        // at the moment the radius is essentially a constant value, but can later be changed or used in a function in conjunction with changing sprites// events which cause the collision to become earlier/ later
         switch(this.difficulty) { // depending on enemy difficulty, the speed (x-axis movement) and radius(enemy collision detection range) increase
             case 'easy':
                 this.speed = 200;
-                this.radius = 50;
+                this.radius = 1;
                 break;
             case 'med':
                 this.speed = 300;
-                this.radius = 50;
+                this.radius = 3;
                 break;
             case 'hard':
                 this.speed = 400;
-                this.radius = 30;
+                this.radius = 5;
                 break;
         }
     }
@@ -49,7 +46,7 @@ Enemy.prototype.update = function(dt) {
     if(this.x >= 501){
         this.x = -55; // resets enemy positions once they go off screen
         if (this.generateProperties !== undefined) {
-            this.generateProperties(); // calls the generate properties method (will only work)
+        this.generateProperties(); // calls the generate properties method (will only work)
         }
         return;
     }
@@ -87,15 +84,15 @@ class SmartEnemy extends Enemy { // SmartEnemy is a subclass which will automati
         switch(this.difficulty) { // depending on enemy difficulty, the speed (x-axis movement) and radius(enemy collision detection range) increase
             case 'easy':
                 this.baseSpeed = 50;
-                this.radius = 50;
+                this.radius = 1;
                 break;
             case 'med':
                 this.baseSpeed = 100;
-                this.radius = 50;
+                this.radius = 3;
                 break;
             case 'hard':
                 this.baseSpeed = 150;
-                this.radius = 30;
+                this.radius = 4;
                 break;
         }
         // master object which contains arrays of all the possible data combinations for randomization of enemies
@@ -137,7 +134,7 @@ SmartEnemy.prototype.generateProperties = function() {
             topSpeed == speedArray[1];
             difficultyMod = 150;
         } else if (difficulty == 'easy') {
-            topSpeed = speedArray[0];
+            topSpeed = speedArray[0]
             difficultyMod = 100;
         }        
         let newSpeed = Math.floor(Math.random()*topSpeed);
@@ -150,8 +147,12 @@ SmartEnemy.prototype.generateProperties = function() {
         this.speed += difficultyMod; // if the randomly generated speed is below 100, add speed to the enemy, so that it will get to the other side during this century xD
     }
     //return sprite to starting position so it is easier to see the change
-    this.x = -60;
-    // randomly gives the enemy a sprite type between the variations
+    this.x = -60; // DEBUG
+
+    if(this.speed >= 125) {
+        console.log(this.enemyBaseData[rAI(this.enemyBaseData.sprite)]);
+    }
+        // randomly gives the enemy a sprite type between the variations
     this.sprite = this.enemyBaseData.sprite[rAI(this.enemyBaseData.sprite)];
 }
 
@@ -254,9 +255,7 @@ Player.prototype.render = function() {
 }
 
 Player.prototype.handleEnd = function(condition) {
-    //DEBUG
-    //m1.show(condition);
-    //DEBUG
+    m1.show(condition);
 }
 
 /**
@@ -276,8 +275,8 @@ class Modal {
         this.$modalTime = document.querySelector('.modal-time');
         this.$modalScore = document.querySelector('.modal-score');
         //stored return values for Modal methods with initial values
-        this.modalScoreMsg = `Your current score is ${player.score}`;
-        this.modalTimeMsg = `The time elapsed for this run was ${player.timer.time} seconds.`;
+        this.modalScoreMsg = "You current score is " + player.score;
+        this.modalTimeMsg = "The time elapsed for this run was " + player.timer.time + " seconds.";
         this.modalTitleMsg; // changes according to updateModalTitle()
         this.modalOpen = 0; // modal open close status
     }
@@ -299,20 +298,20 @@ Modal.prototype.updateModal = function() {
 
 Modal.prototype.updateModalTitle = function() {
     if (this.condition == 'defeat'){
-        this.modalTitleMsg = 'You lost. Nice try!';
+        this.modalTitleMsg = "You lost. Nice try!";
     } else {
-        this.modalTitleMsg = 'You won! Good Job!';
+        this.modalTitleMsg = "You won! Good Job!";
     }
     return this.modalTitleMsg;
 }
 
 Modal.prototype.updateScoreMsg = function() { 
-    this.modalScoreMsg = `Your current score is ${player.score} .`;
+    this.modalScoreMsg = "Your current score is " + player.score + '.';
     return this.modalScoreMsg;
 }
 
 Modal.prototype.updateTimeMsg = function() {
-    this.modalTimeMsg = `The time elapsed for this run was ${player.timer.time} seconds.`;
+    this.modalTimeMsg = "The time elapsed for this run was " + player.timer.time + " seconds.";
     return this.modalTimeMsg;
 }
 
@@ -347,7 +346,7 @@ Scoreboard.prototype.updateBoard = function() {
 }
 
 /**
- * TODO: create a function here that determines enemy creation based on player stats
+ * create a function here that determines enemy creation based on player stats
  */
 
  /**
@@ -357,7 +356,10 @@ Scoreboard.prototype.updateBoard = function() {
 
 let p1 = new Player('images/char-boy.png');
 
-
+/**
+ * initialize enemy/ies
+ * // enemy param1 = difficulty(easy,med,hard == speed & radius), enemy param 2 = y axis position
+ */
 
 let e1 = new Enemy('med', 60);
 let e2 = new Enemy('hard', 145);
@@ -367,17 +369,7 @@ let e3 = new Enemy(undefined, 230); // if no parameter is set defaults to easy
  *  connector variables which allow engine.js to locate players/enemies
  */ 
 let player = p1; // Place the player object in a variable called player
-
-/**
- * instantiate enemies & place them inside of the array allEnemies
- * enemy param1 = difficulty(easy,med,hard == speed & radius), enemy param 2 = y axis position
- */
-let allEnemies = [
-    new Enemy('med', 60),
-    new Enemy('hard', 145), 
-    new Enemy(undefined, 230),
-    new SmartEnemy
-]; 
+let allEnemies = [e1, e2, e3]; // Place all enemy objects in an array called allEnemies
 
 /**
  * initialize modal object 
@@ -392,9 +384,13 @@ m1.initialModalSetup(); // sets up event listeners for modal
 
  let s1 = new Scoreboard;
 
-// allEnemies[allEnemies.length] = x; // is required to make the x in allEnemies and the stated x the SAME
+//DEBUG
+let x = new SmartEnemy;
+allEnemies[allEnemies.length] = x; // is required to make the x in allEnemies and the stated x the SAME
 //allEnemies.push(x);
 // pushing an object into an array creates a new identical object (they do not share references, so changes to x do NOT effect the object in the array)
+//DEBUG
+
 
 // This listens for key presses and sends the keys to your character
 // Player.handleInput() method. You don't need to modify this.
@@ -428,6 +424,7 @@ function handleCharacterFormClick(event) {
 
     if (value !== undefined) {
         let newsprite = 'images/' + value + '.png';
+        console.log(newsprite);
         player.sprite = 'images/'+ value + '.png';
         document.querySelector('canvas').focus();``
     }
